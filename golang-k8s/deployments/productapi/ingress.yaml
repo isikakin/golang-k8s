@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: product-api-ing
+  namespace: default
+spec:
+  rules:
+    - host: product-api.internal
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: product-api-svc
+              servicePort: 80

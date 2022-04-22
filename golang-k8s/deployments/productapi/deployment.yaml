@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-api-deployment
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: product-api
+  template:
+    metadata:
+      labels:
+        app: product-api
+    spec:
+      containers:
+        - name: product-api
+          image: simpleapi:latest
+          imagePullPolicy: Always
+          args: [ "productapi", "--config", "config.dev.yaml"]
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 80
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 60
+            periodSeconds: 5
+            successThreshold: 1
+      terminationGracePeriodSeconds: 30

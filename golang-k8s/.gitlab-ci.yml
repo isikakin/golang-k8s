@@ -1,0 +1,136 @@
+variables:
+  deployment_name: "simpleapi"
+  ### Docker in Docker
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  NAMESPACE: default
+
+stages:
+  - Build
+  - Qa
+  - Publish
+
+Package:
+  stage: Build
+  image: docker:latest
+  services:
+    - docker:19-dind
+  when: manual
+  allow_failure: false
+  tags:
+    - k8s
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID . --no-cache
+  retry:
+    max: 2
+    when: runner_system_failure
+  timeout: 15 minutes
+
+Category Api Qa:
+  stage: Qa
+  needs: ["Package"]
+  image: roffe/kubectl
+  tags:
+    - k8s
+  before_script:
+    - kubectl create secret docker-registry $CI_PROJECT_ROOT_NAMESPACE-secret --docker-server=$CI_REGISTRY --docker-username=kubernetes-global --docker-password=$DEPLOY_TOKEN --dry-run -o yaml | kubectl apply -f -
+  script:
+    - echo "production deployment started"
+    - cat build/prod/api-int/ing.yaml | envsubst | kubectl apply --record=true -f -
+    - cat build/prod/api-int/service.yaml | envsubst | kubectl apply --record=true -f -
+    - cat build/prod/api-int/deployment.yaml | envsubst | kubectl apply --record=true -f -
+    - echo "production deployment ended"
+  after_script:
+    - kubectl rollout status deployment category-api-deployment
+  timeout: 3 minutes
+  retry:
+    max: 2
+    when: runner_system_failure
+  when: manual
+  environment:
+    name: localhost-test/category-api-deployment
+    kubernetes:
+      namespace: $NAMESPACE
+  allow_failure: false
+
+Category Api Prod:
+  stage: Publish
+  needs: ["Package"]
+  image: roffe/kubectl
+  tags:
+    - k8s
+  before_script:
+    - kubectl create secret docker-registry $CI_PROJECT_ROOT_NAMESPACE-secret --docker-server=$CI_REGISTRY --docker-username=kubernetes-global --docker-password=$DEPLOY_TOKEN --dry-run -o yaml | kubectl apply -f -
+  script:
+    - echo "production deployment started"
+    - cat deployments/categoryapi/ingress.yaml | envsubst | kubectl apply --record=true -f -
+    - cat deployments/categoryapi/service.yaml | envsubst | kubectl apply --record=true -f -
+    - cat deployments/categoryapi/deployment.yaml | envsubst | kubectl apply --record=true -f -
+    - echo "production deployment ended"
+  after_script:
+    - kubectl rollout status deployment category-api-deployment
+  timeout: 3 minutes
+  retry:
+    max: 2
+    when: runner_system_failure
+  when: manual
+  environment:
+    name: localhost-test/category-api-deployment
+    kubernetes:
+      namespace: $NAMESPACE
+  allow_failure: false
+
+product Api Qa:
+  stage: Qa
+  needs: ["Packages"]
+  image: roffe/kubectl
+  tags:
+    - k8s
+  before_script:
+    - kubectl create secret docker-registry $CI_PROJECT_ROOT_NAMESPACE-secret --docker-server=$CI_REGISTRY --docker-username=kubernetes-global --docker-password=$DEPLOY_TOKEN --dry-run -o yaml | kubectl apply -f -
+  script:
+    - echo "production deployment started"
+    - cat build/prod/api-int/ing.yaml | envsubst | kubectl apply --record=true -f -
+    - cat build/prod/api-int/service.yaml | envsubst | kubectl apply --record=true -f -
+    - cat build/prod/api-int/deployment.yaml | envsubst | kubectl apply --record=true -f -
+    - echo "production deployment ended"
+  after_script:
+    - kubectl rollout status deployment product-api-deployment
+  timeout: 3 minutes
+  retry:
+    max: 2
+    when: runner_system_failure
+  when: manual
+  environment:
+    name: localhost-test/product-api-deployment
+    kubernetes:
+      namespace: $NAMESPACE
+  allow_failure: false
+
+product Api Prod:
+  stage: Publish
+  needs: ["product Api Qa"]
+  image: roffe/kubectl
+  tags:
+    - k8s
+  before_script:
+    - kubectl create secret docker-registry $CI_PROJECT_ROOT_NAMESPACE-secret --docker-server=$CI_REGISTRY --docker-username=kubernetes-global --docker-password=$DEPLOY_TOKEN --dry-run -o yaml | kubectl apply -f -
+  script:
+    - echo "production deployment started"
+    - cat deployments/productapi/ingress.yaml | envsubst | kubectl apply --record=true -f -
+    - cat deployments/productapi/service.yaml | envsubst | kubectl apply --record=true -f -
+    - cat deployments/productapi/deployment.yaml | envsubst | kubectl apply --record=true -f -
+    - echo "production deployment ended"
+  after_script:
+    - kubectl rollout status deployment product-api-deployment
+  timeout: 3 minutes
+  retry:
+    max: 2
+    when: runner_system_failure
+  when: manual
+  environment:
+    name: localhost-test/product-api-deployment
+    kubernetes:
+      namespace: $NAMESPACE
+  allow_failure: false

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: category-api-deployment
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: category-api
+  template:
+    metadata:
+      labels:
+        app: category-api
+    spec:
+      containers:
+        - name: category-api
+          image: simpleapi:latest
+          imagePullPolicy: Always
+          args: [ "categoryapi", "--config", "config.dev.yaml"]
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 60
+            periodSeconds: 5
+            successThreshold: 1
+      terminationGracePeriodSeconds: 30

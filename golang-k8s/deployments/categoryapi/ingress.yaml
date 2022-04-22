@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: category-api-ing
+  namespace: default
+spec:
+  rules:
+    - host: category-api.internal
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: category-api-svc
+              servicePort: 80

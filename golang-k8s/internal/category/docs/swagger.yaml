@@ -1,0 +1,133 @@
+basePath: '{{.BasePath}}'
+host: '{{.Host}}'
+info:
+  contact: {}
+  description: Get all category list
+  license: {}
+  title: '{{.Title}}'
+  version: '{{.Version}}'
+paths:
+  /{id}:
+    get:
+      description: Get category by id
+      parameters:
+      - description: categoryId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+      summary: Get Category By Id
+      tags:
+      - Category
+  /all:
+    get:
+      description: Get all category list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+      summary: Get All Categories
+      tags:
+      - Category
+  /delete/{id}:
+    delete:
+      description: Delete category by id
+      parameters:
+      - description: categoryId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+      summary: Delete Category By Id
+      tags:
+      - Category
+  /insert:
+    post:
+      description: Insert new category
+      parameters:
+      - description: request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/InsertCategory'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+      summary: Insert category
+      tags:
+      - Category
+  /update/{id}:
+    put:
+      description: Update category fields
+      parameters:
+      - description: request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateCategoryRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/string'
+            type: object
+      summary: Update category
+      tags:
+      - Category
+swagger: "2.0"

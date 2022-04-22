@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: category-api-svc
+  namespace: default
+spec:
+  selector:
+    app: category-api
+  ports:
+    - protocol: TCP
+      port: 80
+      name: "http"
+      targetPort: 5000
