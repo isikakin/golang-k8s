@@ -4,7 +4,7 @@ metadata:
   name: product-api-deployment
   namespace: default
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: product-api
@@ -16,16 +16,16 @@ spec:
       containers:
         - name: product-api
           image: simpleapi:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           args: [ "productapi", "--config", "config.dev.yaml"]
           readinessProbe:
             httpGet:
               path: /readiness
-              port: 80
+              port: 5001
           livenessProbe:
             httpGet:
               path: /healthcheck
-              port: 80
+              port: 5001
             initialDelaySeconds: 10
             timeoutSeconds: 60
             periodSeconds: 5

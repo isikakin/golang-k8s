@@ -2,8 +2,8 @@ appsettings:
   healthcheck: "healthy"
 
 database:
-  #address: "mongodb://host.docker.internal:27017/"
-  address: "mongodb://localhost:27017/"
+  address: "mongodb://host.docker.internal:27017/"
+  #address: "mongodb://localhost:27017/"
   databasename: testdb
   replicaset: ""
 
