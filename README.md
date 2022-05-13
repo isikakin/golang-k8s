@@ -27,6 +27,4 @@ First, we will see how to develop a web api using the Echo framework in the Gola
 
 # Screenshots
 
-![alt text](https://miro.medium.com/max/714/1*mzNqCgVMtVn1b-OGiESS7Q.png "Project Schema")
-
 ![alt text](https://miro.medium.com/max/875/1*iMGY9-TxCmklua94Rw0p2w.png "Kubernetes Dashboard")
